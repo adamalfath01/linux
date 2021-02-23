@@ -3,6 +3,7 @@
  * Android IPC Subsystem
  *
  * Copyright (C) 2007-2008 Google, Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -3038,6 +3039,8 @@ static void binder_transaction(struct binder_proc *proc,
 		case BINDER_TYPE_FDA: {
 			struct binder_fd_array_object *fda =
 				to_binder_fd_array_object(hdr);
+			size_t num_valid = (buffer_offset - off_start_offset) /
+						sizeof(binder_size_t);
 			struct binder_buffer_object *parent =
 				binder_validate_ptr(t->buffer, fda->parent,
 						    off_start,
@@ -3102,9 +3105,12 @@ static void binder_transaction(struct binder_proc *proc,
 						&target_proc->alloc);
 			sg_bufp += ALIGN(bp->length, sizeof(u64));
 
-			ret = binder_fixup_parent(t, thread, bp, off_start,
-						  offp - off_start,
-						  last_fixup_obj,
+			num_valid = (buffer_offset - off_start_offset) /
+					sizeof(binder_size_t);
+			ret = binder_fixup_parent(t, thread, bp,
+						  off_start_offset,
+						  num_valid,
+						  last_fixup_obj_off,
 						  last_fixup_min_off);
 			if (ret < 0) {
 				return_error = BR_FAILED_REPLY;
