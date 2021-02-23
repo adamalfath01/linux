@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
  *
@@ -54,6 +56,17 @@ struct msm_fence_context;
 struct msm_fence_cb;
 struct msm_gem_address_space;
 struct msm_gem_vma;
+
+#define NUM_DOMAINS    4    /* one for KMS, then one per gpu core (?) */
+#define MAX_CRTCS      16
+#define MAX_PLANES     20
+#define MAX_ENCODERS   16
+#define MAX_BRIDGES    16
+#define MAX_CONNECTORS 16
+
+#define TEARDOWN_DEADLOCK_RETRY_MAX 5
+extern atomic_t resume_pending;
+extern wait_queue_head_t resume_wait_q;
 
 struct msm_file_private {
 	/* currently we don't do anything useful with this.. but when
